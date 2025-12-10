@@ -15,6 +15,15 @@ export default function Footer() {
             >
               tailwindcss.com
             </a>
+            {' , '}
+            <a
+              href="https://ui.shadcn.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-foreground hover:text-muted-foreground transition-colors"
+            >
+              ui.shadcn.com
+            </a>
             {' & '}
             <a
               href="https://ui.shadcn.com"
@@ -28,7 +37,7 @@ export default function Footer() {
           <p className="text-sm text-muted-foreground">
             Built by{' '}
             <a
-              href="https://github.com"
+              href="https://cyth.dev"
               target="_blank"
               rel="noopener noreferrer"
               className="text-foreground hover:text-muted-foreground transition-colors"
@@ -37,7 +46,7 @@ export default function Footer() {
             </a>
             . The source code is available on{' '}
             <a
-              href="https://github.com"
+              href="https://github.com/certainlyMohneeesh/cyth-blog"
               target="_blank"
               rel="noopener noreferrer"
               className="text-foreground hover:text-muted-foreground transition-colors"

@@ -13,6 +13,12 @@ import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { PortableText } from 'next-sanity'
 import {TextLoop} from '../src/components/ui/text-loop'
+import { 
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent
+
+ } from '../src/components/ui/tooltip'
 
 import Image from 'next/image'
 
@@ -44,6 +50,8 @@ export default function IndexPage(props: IndexPageProps) {
               {/* Content Side - Spans 7 columns */}
               <div className="flex flex-col items-start text-left md:col-span-7">
                 {/* Status Badge */}
+                <Tooltip>
+                  <TooltipTrigger asChild>
                 <Link href="https://cyth.dev" className="mb-6 flex items-center gap-2 rounded-full border border-border bg-secondary/50 px-4 py-1.5 backdrop-blur-sm">
                   <span className="relative flex h-2 w-2">
                     <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
@@ -53,6 +61,11 @@ export default function IndexPage(props: IndexPageProps) {
                     Cythical Labs
                   </span>
                 </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Visit Cythical Labs to explore more projects!</p>
+                  </TooltipContent>
+                </Tooltip>
 
                 <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
                   {title}
