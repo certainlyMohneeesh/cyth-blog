@@ -9,12 +9,18 @@ const postFields = groq`
   coverImage,
   "slug": slug.current,
   "author": author->{name, picture},
+  isHeroPost,
 `
 
 export const settingsQuery = groq`*[_type == "settings"][0]`
 
+export const heroPostQuery = groq`
+*[_type == "post" && isHeroPost == true][0] {
+  ${postFields}
+}`
+
 export const indexQuery = groq`
-*[_type == "post"] | order(date desc, _updatedAt desc) {
+*[_type == "post" && isHeroPost != true] | order(date desc, _updatedAt desc) {
   ${postFields}
 }`
 
@@ -55,6 +61,7 @@ export interface Post {
   author?: Author
   slug?: string
   content?: any
+  isHeroPost?: boolean
 }
 
 export interface Settings {

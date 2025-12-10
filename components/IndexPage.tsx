@@ -12,12 +12,12 @@ export interface IndexPageProps {
   preview?: boolean
   loading?: boolean
   posts: Post[]
+  heroPost: Post | null
   settings: Settings
 }
 
 export default function IndexPage(props: IndexPageProps) {
-  const { preview, loading, posts, settings } = props
-  const [heroPost, ...morePosts] = posts || []
+  const { preview, loading, posts, heroPost, settings } = props
   const { title = demo.title, description = demo.description } = settings || {}
 
   return (
@@ -37,7 +37,7 @@ export default function IndexPage(props: IndexPageProps) {
               excerpt={heroPost.excerpt}
             />
           )}
-          {morePosts.length > 0 && <MoreStories posts={morePosts} />}
+          {posts.length > 0 && <MoreStories posts={posts} />}
         </Container>
         <Suspense>
         </Suspense>

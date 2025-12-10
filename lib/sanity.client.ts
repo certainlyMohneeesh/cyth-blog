@@ -6,6 +6,7 @@ import {
   useCdn,
 } from 'lib/sanity.api'
 import {
+  heroPostQuery,
   indexQuery,
   type Post,
   postAndMoreStoriesQuery,
@@ -50,6 +51,10 @@ export const getSanityImageConfig = () => getClient()
 
 export async function getSettings(client: SanityClient): Promise<Settings> {
   return (await client.fetch(settingsQuery)) || {}
+}
+
+export async function getHeroPost(client: SanityClient): Promise<Post | null> {
+  return (await client.fetch(heroPostQuery)) || null
 }
 
 export async function getAllPosts(client: SanityClient): Promise<Post[]> {
