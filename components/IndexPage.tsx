@@ -13,6 +13,8 @@ import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { PortableText } from 'next-sanity'
 
+import Image from 'next/image'
+
 export interface IndexPageProps {
   preview?: boolean
   loading?: boolean
@@ -34,6 +36,16 @@ export default function IndexPage(props: IndexPageProps) {
         <section className="py-20 md:py-32">
           <Container>
             <div className="mx-auto max-w-4xl text-center">
+              <div className="mb-8 flex justify-center">
+                <Image
+                  src="/cythblog-lightmode.png"
+                  alt="CythBlog Logo"
+                  width={120}
+                  height={120}
+                  className="h-50 w-auto dark:invert"
+                  priority
+                />
+              </div>
               <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-foreground sm:text-6xl md:text-7xl">
                 {title}
               </h1>
