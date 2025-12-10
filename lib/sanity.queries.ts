@@ -1,6 +1,6 @@
 import groq from 'groq'
 
-const postFields = groq`
+export const postFields = groq`
   _id,
   title,
   date,
@@ -13,6 +13,11 @@ const postFields = groq`
 `
 
 export const settingsQuery = groq`*[_type == "settings"][0]`
+
+export const allPostsQuery = groq`
+*[_type == "post"] | order(date desc, _updatedAt desc) {
+  ${postFields}
+}`
 
 export const heroPostQuery = groq`
 *[_type == "post" && isHeroPost == true][0] {
