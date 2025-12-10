@@ -22,6 +22,15 @@ import {
 
 import Image from 'next/image'
 
+import { Space_Mono } from 'next/font/google'
+
+const spaceMono = Space_Mono({
+  subsets: ['latin'],
+  weight: ['700'],
+  style: ['italic'],
+  variable: '--font-space-mono',
+})
+
 export interface IndexPageProps {
   preview?: boolean
   loading?: boolean
@@ -73,7 +82,7 @@ export default function IndexPage(props: IndexPageProps) {
 
                 <div className="mb-8 flex flex-wrap items-center gap-x-3 text-3xl font-bold text-muted-foreground md:text-4xl lg:text-5xl">
                   <span>Exploring</span>
-                  <TextLoop className="text-primary" interval={3}>
+                  <TextLoop className={`text-primary ${spaceMono.className}`} interval={3}>
                     <span>Code</span>
                     <span>Design</span>
                     <span>Innovation</span>
@@ -100,7 +109,6 @@ export default function IndexPage(props: IndexPageProps) {
               <div className="relative flex justify-center md:col-span-5 md:justify-end">
                 {/* Decorative Glow */}
                 <div className="absolute inset-0 scale-90 transform rounded-full bg-gradient-to-tr from-primary/20 to-transparent blur-2xl" />
-                
                 <Image
                   src="/cythblog-lightmode.png"
                   alt="CythBlog Logo"
