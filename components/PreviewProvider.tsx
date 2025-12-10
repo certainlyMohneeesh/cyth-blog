@@ -1,6 +1,6 @@
 import { LiveQueryProvider } from '@sanity/preview-kit'
 import { getClient } from 'lib/sanity.client'
-import { useState } from 'react'
+import { useMemo } from 'react'
 
 export default function PreviewProvider({
   children,
@@ -11,10 +11,10 @@ export default function PreviewProvider({
   perspective: string | null
   token: string
 }) {
-  const [client] = useState(() => getClient().withConfig({ stega: true }))
+  const client = useMemo(() => getClient().withConfig({ stega: true }), [])
   return (
     <LiveQueryProvider
-      client={client}
+      client={client as any}
       perspective={
         typeof perspective === 'string' ? perspective.split(',') : undefined
       }
