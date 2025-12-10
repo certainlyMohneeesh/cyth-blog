@@ -2,6 +2,60 @@
 
 Your Sanity blog now supports comprehensive tech blogging features! 🚀
 
+## 🔥 NEW: Markdown Import Feature
+
+You can now **paste entire markdown documents** and have them automatically converted to Sanity blocks!
+
+### How to Use Markdown Import:
+
+1. **Open a post** in Sanity Studio
+2. **Click the "Import Markdown" button** (📝 icon) in the document actions menu (top right)
+3. **Paste your markdown content** in the dialog
+4. **Click "Import Markdown"** to convert and append to your post
+
+### What Gets Converted:
+
+✅ **Headers** (# H1, ## H2, ### H3, #### H4)  
+✅ **Code blocks** with language detection (```language)  
+✅ **Tables** with header rows  
+✅ **Bold** (\*\*text\*\* or \_\_text\_\_)  
+✅ **Italic** (\*text\* or \_text\_)  
+✅ **Inline code** (\`code\`)  
+✅ **Strikethrough** (~~text~~)  
+✅ **Links** ([text](url))  
+✅ **Blockquotes** (> quote)  
+✅ **Bullet lists** (- item or \* item)  
+✅ **Numbered lists** (1. item)  
+
+### Example Markdown:
+
+```markdown
+# My Tech Tutorial
+
+## Introduction
+
+This is **bold** text and this is *italic*.
+
+## Code Example
+
+\```javascript
+function hello() {
+  console.log("Hello World!");
+}
+\```
+
+## Feature Comparison
+
+| Feature | React | Vue |
+|---------|-------|-----|
+| Virtual DOM | Yes | Yes |
+| Learning Curve | Medium | Easy |
+
+> **Note**: This is a blockquote!
+```
+
+---
+
 ## Available Content Types
 
 ### 1. **Code Blocks** 💻

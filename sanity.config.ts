@@ -12,6 +12,7 @@ import {
   projectId,
 } from 'lib/sanity.api'
 import { locate } from 'plugins/locate'
+import { markdownImportAction } from 'plugins/markdownImportAction'
 import { previewDocumentNode } from 'plugins/previewPane'
 import { settingsPlugin, settingsStructure } from 'plugins/settings'
 import { defineConfig } from 'sanity'
@@ -39,6 +40,7 @@ export default defineConfig({
   },
   plugins: [
     codeInput(),
+    markdownImportAction(),
     structureTool({
       structure: settingsStructure(settingsType),
       // `defaultDocumentNode` is responsible for adding a “Preview” tab to the document pane
