@@ -90,9 +90,9 @@ export default function IndexPage(props: IndexPageProps) {
                   </TextLoop>
                 </div>
 
-                <div className="mb-10 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+                <section className="mb-10 max-w-xl text-lg leading-relaxed text-muted-foreground md:text-xl prose prose-lg prose-invert">
                   <PortableText value={description} />
-                </div>
+                </section>
 
                 {heroPost && (
                   <Link

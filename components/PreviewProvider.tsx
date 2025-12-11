@@ -1,8 +1,8 @@
 import { LiveQueryProvider } from '@sanity/preview-kit'
 import { getClient } from 'lib/sanity.client'
-import { useMemo } from 'react'
+import { memo, useMemo } from 'react'
 
-export default function PreviewProvider({
+function PreviewProvider({
   children,
   perspective,
   token,
@@ -24,3 +24,5 @@ export default function PreviewProvider({
     </LiveQueryProvider>
   )
 }
+
+export default memo(PreviewProvider)

@@ -33,7 +33,9 @@ export default defineType({
       of: [
         defineArrayMember({
           type: 'block',
-          styles: [],
+          styles: [
+            { title: 'Normal', value: 'normal' }
+          ],
           lists: [],
           marks: {
             decorators: [

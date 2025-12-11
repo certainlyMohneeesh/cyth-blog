@@ -1,3 +1,4 @@
+'use client';
 import { definePlugin } from 'sanity'
 import { DocumentActionComponent, useDocumentOperation } from 'sanity'
 import { useState } from 'react'

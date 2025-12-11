@@ -19,6 +19,7 @@ export function markdownToPortableText(markdown: string): PortableTextBlock[] {
   let inTable = false
   let tableRows: string[][] = []
   let tableHasHeader = false
+  let listStack: Array<{ level: number; type: 'bullet' | 'number' }> = []
   
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
@@ -88,11 +89,13 @@ export function markdownToPortableText(markdown: string): PortableTextBlock[] {
 
     // Skip empty lines
     if (!trimmedLine) {
+      listStack = []
       continue
     }
 
     // Handle headers
     if (trimmedLine.startsWith('#')) {
+      listStack = []
       const level = trimmedLine.match(/^#+/)?.[0].length || 1
       const text = trimmedLine.replace(/^#+\s*/, '')
       const style = level === 1 ? 'h1' : level === 2 ? 'h2' : level === 3 ? 'h3' : 'h4'
@@ -101,14 +104,7 @@ export function markdownToPortableText(markdown: string): PortableTextBlock[] {
         _type: 'block',
         _key: generateKey(),
         style,
-        children: [
-          {
-            _type: 'span',
-            _key: generateKey(),
-            text,
-            marks: [],
-          },
-        ],
+        children: parseInlineMarks(text),
         markDefs: [],
       })
       continue
@@ -116,45 +112,50 @@ export function markdownToPortableText(markdown: string): PortableTextBlock[] {
 
     // Handle blockquotes
     if (trimmedLine.startsWith('>')) {
+      listStack = []
       const text = trimmedLine.replace(/^>\s*/, '')
       blocks.push({
         _type: 'block',
         _key: generateKey(),
         style: 'blockquote',
-        children: [
-          {
-            _type: 'span',
-            _key: generateKey(),
-            text,
-            marks: [],
-          },
-        ],
-        markDefs: [],
-      })
-      continue
-    }
-
-    // Handle lists
-    if (trimmedLine.match(/^[\*\-\+]\s/)) {
-      const text = trimmedLine.replace(/^[\*\-\+]\s*/, '')
-      blocks.push({
-        _type: 'block',
-        _key: generateKey(),
-        style: 'normal',
-        listItem: 'bullet',
         children: parseInlineMarks(text),
         markDefs: [],
       })
       continue
     }
 
-    if (trimmedLine.match(/^\d+\.\s/)) {
-      const text = trimmedLine.replace(/^\d+\.\s*/, '')
+    // Handle lists with proper nesting
+    const bulletMatch = line.match(/^(\s*)([\*\-\+])\s+(.+)$/)
+    const numberedMatch = line.match(/^(\s*)(\d+\.)\s+(.+)$/)
+    
+    if (bulletMatch) {
+      const indent = bulletMatch[1].length
+      const text = bulletMatch[3]
+      const level = Math.floor(indent / 2) + 1
+      
+      blocks.push({
+        _type: 'block',
+        _key: generateKey(),
+        style: 'normal',
+        listItem: 'bullet',
+        level,
+        children: parseInlineMarks(text),
+        markDefs: [],
+      })
+      continue
+    }
+
+    if (numberedMatch) {
+      const indent = numberedMatch[1].length
+      const text = numberedMatch[3]
+      const level = Math.floor(indent / 2) + 1
+      
       blocks.push({
         _type: 'block',
         _key: generateKey(),
         style: 'normal',
         listItem: 'number',
+        level,
         children: parseInlineMarks(text),
         markDefs: [],
       })
@@ -162,6 +163,7 @@ export function markdownToPortableText(markdown: string): PortableTextBlock[] {
     }
 
     // Handle normal paragraphs with inline formatting
+    listStack = []
     blocks.push({
       _type: 'block',
       _key: generateKey(),
@@ -189,57 +191,123 @@ export function markdownToPortableText(markdown: string): PortableTextBlock[] {
 
 function parseInlineMarks(text: string): any[] {
   const children: any[] = []
-  let currentPos = 0
-  const markDefs: any[] = []
-
-  // Regex patterns for inline formatting
-  const patterns = [
-    { regex: /\*\*(.+?)\*\*/g, mark: 'strong' },
-    { regex: /__(.+?)__/g, mark: 'strong' },
-    { regex: /\*(.+?)\*/g, mark: 'em' },
-    { regex: /_(.+?)_/g, mark: 'em' },
-    { regex: /`(.+?)`/g, mark: 'code' },
-    { regex: /~~(.+?)~~/g, mark: 'strike-through' },
-    { regex: /\[(.+?)\]\((.+?)\)/g, mark: 'link' },
-  ]
-
-  // Find all matches
-  const matches: Array<{
+  const segments: Array<{
     start: number
     end: number
-    text: string
-    mark: string
+    content: string
+    marks: string[]
     href?: string
   }> = []
 
-  patterns.forEach(({ regex, mark }) => {
+  // Create a working copy of the text to track what's been processed
+  let processedRanges: Array<{ start: number; end: number }> = []
+
+  // Process in order of precedence: links first, then bold, italic, code, strikethrough
+  const patterns = [
+    { 
+      regex: /\[([^\]]+)\]\(([^)]+)\)/g, 
+      type: 'link',
+      handler: (match: RegExpExecArray) => ({
+        content: match[1],
+        marks: [] as string[],
+        href: match[2] as string | undefined,
+      })
+    },
+    { 
+      regex: /\*\*([^*]+)\*\*/g, 
+      type: 'strong',
+      handler: (match: RegExpExecArray) => ({
+        content: match[1],
+        marks: ['strong'],
+        href: undefined as string | undefined,
+      })
+    },
+    { 
+      regex: /__([^_]+)__/g, 
+      type: 'strong',
+      handler: (match: RegExpExecArray) => ({
+        content: match[1],
+        marks: ['strong'],
+        href: undefined as string | undefined,
+      })
+    },
+    { 
+      regex: /\*([^*]+)\*/g, 
+      type: 'em',
+      handler: (match: RegExpExecArray) => ({
+        content: match[1],
+        marks: ['em'],
+        href: undefined as string | undefined,
+      })
+    },
+    { 
+      regex: /_([^_]+)_/g, 
+      type: 'em',
+      handler: (match: RegExpExecArray) => ({
+        content: match[1],
+        marks: ['em'],
+        href: undefined as string | undefined,
+      })
+    },
+    { 
+      regex: /`([^`]+)`/g, 
+      type: 'code',
+      handler: (match: RegExpExecArray) => ({
+        content: match[1],
+        marks: ['code'],
+        href: undefined as string | undefined,
+      })
+    },
+    { 
+      regex: /~~([^~]+)~~/g, 
+      type: 'strike-through',
+      handler: (match: RegExpExecArray) => ({
+        content: match[1],
+        marks: ['strike-through'],
+        href: undefined as string | undefined,
+      })
+    },
+  ]
+
+  // Find all pattern matches
+  patterns.forEach(({ regex, type, handler }) => {
     const regexCopy = new RegExp(regex.source, regex.flags)
     let match
+    
     while ((match = regexCopy.exec(text)) !== null) {
-      if (mark === 'link') {
-        matches.push({
-          start: match.index,
-          end: match.index + match[0].length,
-          text: match[1],
-          mark,
-          href: match[2],
+      const start = match.index
+      const end = match.index + match[0].length
+      
+      // Check if this range overlaps with already processed ranges
+      const overlaps = processedRanges.some(
+        range => (start >= range.start && start < range.end) || 
+                 (end > range.start && end <= range.end) ||
+                 (start <= range.start && end >= range.end)
+      )
+      
+      if (!overlaps) {
+        const result = handler(match)
+        segments.push({
+          start,
+          end,
+          content: result.content,
+          marks: result.marks || [],
+          href: result.href,
         })
-      } else {
-        matches.push({
-          start: match.index,
-          end: match.index + match[0].length,
-          text: match[1],
-          mark,
-        })
+        
+        // Mark this range as processed for non-link patterns
+        if (type !== 'link') {
+          processedRanges.push({ start, end })
+        }
       }
     }
   })
 
-  // Sort by position
-  matches.sort((a, b) => a.start - b.start)
+  // Sort segments by start position
+  segments.sort((a, b) => a.start - b.start)
 
   // If no matches, return plain text
-  if (matches.length === 0) {
+  if (segments.length === 0) {
     return [
       {
         _type: 'span',
@@ -251,53 +319,62 @@ function parseInlineMarks(text: string): any[] {
   }
 
   // Build children with marks
-  let lastEnd = 0
-  matches.forEach(match => {
-    // Add plain text before match
-    if (match.start > lastEnd) {
-      children.push({
-        _type: 'span',
-        _key: generateKey(),
-        text: text.slice(lastEnd, match.start),
-        marks: [],
-      })
+  let currentPos = 0
+  const markDefs: any[] = []
+
+  segments.forEach(segment => {
+    // Add plain text before this segment
+    if (segment.start > currentPos) {
+      const plainText = text.slice(currentPos, segment.start)
+      if (plainText) {
+        children.push({
+          _type: 'span',
+          _key: generateKey(),
+          text: plainText,
+          marks: [],
+        })
+      }
     }
 
-    // Add marked text
-    if (match.mark === 'link') {
+    // Add the marked segment
+    if (segment.href) {
+      // This is a link
       const markDefKey = generateKey()
       markDefs.push({
         _key: markDefKey,
         _type: 'link',
-        href: match.href,
-        blank: true,
+        href: segment.href,
       })
       children.push({
         _type: 'span',
         _key: generateKey(),
-        text: match.text,
+        text: segment.content,
         marks: [markDefKey],
       })
     } else {
+      // Regular mark (bold, italic, code, etc.)
       children.push({
         _type: 'span',
         _key: generateKey(),
-        text: match.text,
-        marks: [match.mark],
+        text: segment.content,
+        marks: segment.marks,
       })
     }
 
-    lastEnd = match.end
+    currentPos = segment.end
   })
 
-  // Add remaining text
-  if (lastEnd < text.length) {
-    children.push({
-      _type: 'span',
-      _key: generateKey(),
-      text: text.slice(lastEnd),
-      marks: [],
-    })
+  // Add any remaining plain text
+  if (currentPos < text.length) {
+    const remainingText = text.slice(currentPos)
+    if (remainingText) {
+      children.push({
+        _type: 'span',
+        _key: generateKey(),
+        text: remainingText,
+        marks: [],
+      })
+    }
   }
 
   return children

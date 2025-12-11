@@ -1,4 +1,5 @@
 import { useLiveQuery } from '@sanity/preview-kit'
+import { ErrorBoundary } from 'components/ErrorBoundary'
 import PostPage, { PostPageProps } from 'components/PostPage'
 import {
   type Post,
@@ -22,12 +23,14 @@ export default function PreviewPostPage(props: PostPageProps) {
   )
 
   return (
-    <PostPage
-      preview
-      loading={loadingPost || loadingSettings}
-      post={postPreview}
-      morePosts={morePosts}
-      settings={settings}
-    />
+    <ErrorBoundary>
+      <PostPage
+        preview
+        loading={loadingPost || loadingSettings}
+        post={postPreview}
+        morePosts={morePosts}
+        settings={settings}
+      />
+    </ErrorBoundary>
   )
 }

@@ -31,11 +31,15 @@ export default defineType({
       of: [
         defineArrayMember({
           type: 'block',
-          options: {},
-          styles: [],
+          styles: [
+            { title: 'Normal', value: 'normal' }
+          ],
           lists: [],
           marks: {
-            decorators: [],
+            decorators: [
+              { title: 'Strong', value: 'strong' },
+              { title: 'Emphasis', value: 'em' },
+            ],
             annotations: [
               defineField({
                 type: 'object',

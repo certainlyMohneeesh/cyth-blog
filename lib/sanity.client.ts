@@ -50,33 +50,64 @@ export function getClient(preview?: {
 export const getSanityImageConfig = () => getClient()
 
 export async function getSettings(client: SanityClient): Promise<Settings> {
-  return (await client.fetch(settingsQuery)) || {}
+  try {
+    return (await client.fetch(settingsQuery)) || {}
+  } catch (error) {
+    console.error('Error fetching settings:', error)
+    return {}
+  }
 }
 
 export async function getHeroPost(client: SanityClient): Promise<Post | null> {
-  return (await client.fetch(heroPostQuery)) || null
+  try {
+    return (await client.fetch(heroPostQuery)) || null
+  } catch (error) {
+    console.error('Error fetching hero post:', error)
+    return null
+  }
 }
 
 export async function getAllPosts(client: SanityClient): Promise<Post[]> {
-  return (await client.fetch(indexQuery)) || []
+  try {
+    return (await client.fetch(indexQuery)) || []
+  } catch (error) {
+    console.error('Error fetching all posts:', error)
+    return []
+  }
 }
 
 export async function getAllPostsSlugs(): Promise<Pick<Post, 'slug'>[]> {
-  const client = getClient()
-  const slugs = (await client.fetch<string[]>(postSlugsQuery)) || []
-  return slugs.map((slug) => ({ slug }))
+  try {
+    const client = getClient()
+    const slugs = (await client.fetch<string[]>(postSlugsQuery)) || []
+    return slugs.map((slug) => ({ slug }))
+  } catch (error) {
+    console.error('Error fetching post slugs:', error)
+    return []
+  }
 }
 
 export async function getPostBySlug(
   client: SanityClient,
   slug: string,
 ): Promise<Post> {
-  return (await client.fetch(postBySlugQuery, { slug })) || ({} as any)
+  try {
+    return (await client.fetch(postBySlugQuery, { slug })) || ({} as any)
+  } catch (error) {
+    console.error('Error fetching post by slug:', error)
+    return {} as any
+  }
 }
 
 export async function getPostAndMoreStories(
   client: SanityClient,
   slug: string,
 ): Promise<{ post: Post; morePosts: Post[] }> {
-  return await client.fetch(postAndMoreStoriesQuery, { slug })
+  try {
+    const result = await client.fetch(postAndMoreStoriesQuery, { slug })
+    return result || { post: null, morePosts: [] }
+  } catch (error) {
+    console.error('Error fetching post and more stories:', error)
+    return { post: null, morePosts: [] }
+  }
 }

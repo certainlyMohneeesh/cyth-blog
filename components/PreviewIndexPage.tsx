@@ -1,4 +1,5 @@
 import { useLiveQuery } from '@sanity/preview-kit'
+import { ErrorBoundary } from 'components/ErrorBoundary'
 import IndexPage, { type IndexPageProps } from 'components/IndexPage'
 import {
   heroPostQuery,
@@ -20,12 +21,14 @@ export default function PreviewIndexPage(props: IndexPageProps) {
   )
 
   return (
-    <IndexPage
-      preview
-      loading={loadingPosts || loadingHeroPost || loadingSettings}
-      posts={posts || []}
-      heroPost={heroPost || null}
-      settings={settings || {}}
-    />
+    <ErrorBoundary>
+      <IndexPage
+        preview
+        loading={loadingPosts || loadingHeroPost || loadingSettings}
+        posts={posts || []}
+        heroPost={heroPost || null}
+        settings={settings || {}}
+      />
+    </ErrorBoundary>
   )
 }
