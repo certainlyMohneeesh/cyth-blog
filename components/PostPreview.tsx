@@ -47,34 +47,35 @@ export default function PostPreview({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5 }}
-      className="group relative h-[400px] overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-900 shadow-lg hover:shadow-2xl transition-shadow duration-300"
+      className="group relative h-[400px] overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
     >
-      <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
-        <motion.div
-          animate={isOpen ? 'expanded' : 'collapsed'}
-          variants={imageVariants}
-          transition={transition}
-          className="relative h-[400px] w-full overflow-hidden"
-        >
+      <motion.div
+        onClick={() => setIsOpen(!isOpen)}
+        className="cursor-pointer"
+        animate={isOpen ? 'expanded' : 'collapsed'}
+        variants={imageVariants}
+        transition={transition}
+      >
+        <div className="relative h-[400px] w-full">
           <CoverImage
             slug={slug}
             title={title}
             image={coverImage}
             priority={false}
           />
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
       
       <Disclosure
         onOpenChange={setIsOpen}
         open={isOpen}
-        className="absolute bottom-0 left-0 right-0 rounded-t-2xl bg-white dark:bg-gray-950 px-6 pt-4 shadow-2xl border-t border-gray-200 dark:border-gray-800"
+        className="absolute inset-x-0 bottom-0 bg-white dark:bg-gray-950 shadow-2xl"
         variants={contentVariants}
         transition={transition}
       >
         <DisclosureTrigger>
           <button
-            className="w-full pb-3 text-left"
+            className="w-full px-6 pt-4 pb-3 text-left"
             type="button"
             onClick={() => setIsOpen(!isOpen)}
           >
@@ -90,7 +91,7 @@ export default function PostPreview({
         </DisclosureTrigger>
         
         <DisclosureContent>
-          <div className="flex flex-col pb-6 space-y-4">
+          <div className="flex flex-col px-6 pb-6 space-y-4">
             {excerpt && (
               <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3">
                 {excerpt}

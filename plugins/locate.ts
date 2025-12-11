@@ -4,7 +4,7 @@ import {
   DocumentLocationsState,
 } from 'sanity/presentation'
 
-export const locate: DocumentLocationResolver = (params, context) => {
+export const locations: DocumentLocationResolver = (params, context) => {
   if (params.type === 'settings') {
     return {
       message: 'This document is used on all pages',

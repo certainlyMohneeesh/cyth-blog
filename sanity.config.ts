@@ -11,7 +11,7 @@ import {
   PREVIEW_MODE_ROUTE,
   projectId,
 } from 'lib/sanity.api'
-import { locate } from 'plugins/locate'
+import { locations } from 'plugins/locate'
 import { markdownImportAction } from 'plugins/markdownImportAction'
 import { previewDocumentNode } from 'plugins/previewPane'
 import { settingsPlugin, settingsStructure } from 'plugins/settings'
@@ -47,7 +47,9 @@ export default defineConfig({
       defaultDocumentNode: previewDocumentNode(),
     }),
     presentationTool({
-      locate,
+      resolve: {
+        locations,
+      },
       previewUrl: { previewMode: { enable: PREVIEW_MODE_ROUTE } },
     }),
     // Configures the global "new document" button, and document actions, to suit the Settings document singleton
